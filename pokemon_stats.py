@@ -14,18 +14,13 @@ def load_data(filepath):
             if (i >= 20):
                 break
             dic1 = dict(row)
+            # delete column of 'Generation' and 'Legendary'
             del dic1['Generation']
             del dic1['Legendary']
             return_list.append(dic1)
             i += 1
         return return_list
 
-#        b = list(reader)
-#        return_list = []
-#        for item in b [:20]:
-#            return_list.append(item)
-
-#       return return_list
 
 def calculate_x_y(stats):
     x = int(stats['Attack']) + int(stats['Sp. Atk']) + int(stats['Speed'])
@@ -33,31 +28,47 @@ def calculate_x_y(stats):
     return (x,y)
 
 def hac(dataset):
+    u = 0
+    h = dataset
+    for q in dataset:
+        if(q[0] == float('NaN')):
+            h.pop(u)
+        elif (q[1] == float('NaN')):
+            h.pop(u)
+        elif (q[0] == float('inf')):
+            h.pop(u)
+        elif (q[1] == float('inf')):
+            h.pop(u)
+        u += 1
+
+    dataset = h
+
     m = len(dataset) #length of the dataset
     i = 0
     dic = {}
+
+    # matches data with labels in dic
     for item in dataset:
 
         dic[str(i)] = item
         i += 1
-    #print(dic)
 
 
 
 
-    a = []
+    a = [] # the list of information about clusters
     for i in range(m-1):
+        # the list of size 4
         list = []
+        #temp list
         shortlist = []
         point1, point2, dismin, key1, key2 = calculate_shortest_two_points(dic)
 
         l = 0
 
-
+        #iterate through every two loops in the dic
         if type(dic.get(key1)) == type(list):
-            #print(dic.get(key1))
             for i in dic.get(key1):
-                #print(i)
                 shortlist.append(i)
                 l += 1
             if type(dic.get(key2)) == type(list):
@@ -89,18 +100,19 @@ def hac(dataset):
         dic[str(m)] = shortlist
         m = m + 1
 
-
+        #delete clusters
         try:
             del dic[key1]
             del dic[key2]
         except KeyError:
-            print(1)
+            #print(1)
             pass
         ###print(dic)
 
         key1 = int(key1)
         key2 = int(key2)
 
+        #compare the size of keys
         if key1 <key2:
             list.append(key1)
             list.append(key2)
@@ -121,7 +133,7 @@ def hac(dataset):
 
 
 
-
+# returns point1, point2, mindis, and key1, key2 of shortest points
 def calculate_shortest_two_points(dic):
     key1 = 0
     key2 = 0
@@ -203,25 +215,10 @@ def calculate_shortest_two_points(dic):
 
             if(dis < dismin):
                 dismin = dis
-#                if(type(tup1) == type(list)):
-#                    tup1 = value[int(key)]
-#                elif (type(tup2) == type(list)):
-#                   tup2 = value1[int(k)]
-#                else:
-#                tup1 = value
-#                tup2 = value1
                 return_tup1 = tup1
                 return_tup2 = tup2
                 key1 = key
                 key2 = k
-#            elif(dis == dismin):
-#                if (int(key) < int(key1)):
-#                    key1 = key
-#                if int(k) < int(key2):
-#                    key2 = k
-#                dismin = dis
-#                tup1 = value
-#                tup2 = value1
 
 
     return return_tup1, return_tup2, dismin, key1, key2
@@ -241,13 +238,28 @@ def random_x_y(m):
     return list
 
 def imshow_hac(dataset):
+    u = 0
+    h = dataset
+    for q in dataset:
+        if(q[0] == float('NaN')):
+            h.pop(u)
+        elif (q[1] == float('NaN')):
+            h.pop(u)
+        elif (q[0] == float('inf')):
+            h.pop(u)
+        elif (q[1] == float('inf')):
+            h.pop(u)
+        u += 1
+
+    dataset = h
+
     m = len(dataset)  # length of the dataset
     i = 0
     dic = {}
+    # matches data with label in dic
     for item in dataset:
         dic[str(i)] = item
         i += 1
-    # print(dic)
 
     a = []
 
@@ -273,7 +285,7 @@ def imshow_hac(dataset):
         plt.pause(0.1)
         # print(point1, point2)
 
-        print(point1, point2)
+        #print(point1, point2)
 
         l = 0
 
@@ -336,7 +348,7 @@ def imshow_hac(dataset):
         list.append(l)
         a.append(list)
 
-        plt.pause(5)
+    plt.pause(5)
 
 
 
@@ -372,19 +384,19 @@ if __name__=="__main__":
     for i in range(20):
         list.append(calculate_x_y(a[i]))
 #    print(list)
-    print(hac(list))
+    hac(list)
     #print(list)
 
     imshow_hac(list)
     #print(list)
 
-    #print(random_x_y(30))
+    random_x_y(30)
 
 
     X = list
 #    print(X)
     Z = linkage(X)
-    print(Z)
+    #print(Z)
 #    fig = plt.figure(figsize=(25, 10))
 #    dn = dendrogram(Z)
 #    Z = linkage(X, 'single')
