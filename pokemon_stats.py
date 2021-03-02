@@ -3,7 +3,7 @@ from scipy.cluster.hierarchy import dendrogram, linkage
 from matplotlib import pyplot as plt
 from scipy.spatial.distance import euclidean
 import random
-import math
+import numpy
 
 def load_data(filepath):
     with open(filepath, newline= '') as csvfile:
@@ -13,7 +13,10 @@ def load_data(filepath):
         for row in reader:
             if (i >= 20):
                 break
-            return_list.append(dict(row))
+            dic1 = dict(row)
+            del dic1['Generation']
+            del dic1['Legendary']
+            return_list.append(dic1)
             i += 1
         return return_list
 
@@ -33,14 +36,12 @@ def hac(dataset):
     m = len(dataset) #length of the dataset
     i = 0
     dic = {}
-    c = []
     for item in dataset:
 
         dic[str(i)] = item
         i += 1
-    print(dic)
-    list_x = []
-    dismin = 0
+    #print(dic)
+
 
 
 
@@ -49,12 +50,6 @@ def hac(dataset):
         list = []
         shortlist = []
         point1, point2, dismin, key1, key2 = calculate_shortest_two_points(dic)
-        #print(point1)
-        #print(point2)
-        #print(dismin)
-
-        print(key1)
-        print(key2)
 
         l = 0
 
@@ -94,18 +89,14 @@ def hac(dataset):
         dic[str(m)] = shortlist
         m = m + 1
 
-        #dic = removekey(dic, key1)
-        #print(dic)
-        #dic = removekey(dic, key2)
-        #print(dic)
 
         try:
             del dic[key1]
             del dic[key2]
         except KeyError:
-            #print(1)
+            print(1)
             pass
-        print(dic)
+        ###print(dic)
 
         key1 = int(key1)
         key2 = int(key2)
@@ -118,43 +109,36 @@ def hac(dataset):
             list.append(key1)
 
 
-        #print(dismin)
         list.append(dismin)
         list.append(l)
         a.append(list)
-    print(a)
-
-
-#    a = []
-#    for i in range(m-1):
-#        a.append([]*4)
-#    a[0].append(1)
-#    a[0].append(2)
+    b = numpy.matrix(a)
+    return b
 
 
 
 
 
-    #print(a)
-    #print(dic)
-#def multiply_list(list):
-#    result = 1
-#    for x
+
+
 
 def calculate_shortest_two_points(dic):
-    tup1 = ()
-    tup2 = ()
     key1 = 0
     key2 = 0
     dismin = float('inf')
     for key, value in dic.items():
         dis = float('inf')
+        tup3 = ()
+        tup4 = ()
         for k, value1 in dic.items():
             if(value1 == value):
-                continue
+               continue
+            dis1 = float('inf')
+
 
 
             if type(value) == type(list):
+
 
                 for i in value:
                     #print(i)
@@ -162,53 +146,86 @@ def calculate_shortest_two_points(dic):
                     if type(value1) == type(list):
 
                         for j in value1:
-                            if (value == j):
-                                continue
-                            dis1 = euclidean(i, j)
+
+                            #if (value == j):
+                                #continue
+                            dis3 = euclidean(i, j)
+                            if(dis3 < dis1):
+                                dis1 = dis3
+                                tup3 = i
+                                tup4 = j
                     else:
 
 
                         dis1 = euclidean(i, value1)
+                        tup3 = i
+                        tup4 = value1
                     #print(dis1)
 
                     if dis1 < dis:
                         dis = dis1
-                    if (math.ceil(dis1) == 68):
-                       print(i)
+                        tup1 = tup3
+                        tup2 = tup4
+                    #print(dis1)
 
             elif type (value1) == type(list):
-
+#                tup3 = ()
+#                tup4 = ()
                 for j in value1:
+
                     if (value == j):
                         continue
                     if type(value) == type(list):
                         for i in value:
-                            dis1 = euclidean(i, j)
+                            dis3 = euclidean(i, j)
+                            if( dis3 < dis1):
+                                dis1 = dis3
+                                tup3 = i
+                                tup4 = j
                     else:
                         dis1 = euclidean(value, j)
+                        tup3 = value
+                        tup4 = j
                     #print(dis1)
                     if (dis1 < dis):
                         dis = dis1
-                    if(math.ceil(dis1) == 68):
-                        print(j)
+                        tup1 = tup3
+                        tup2 = tup4
+
+
+
 
             else:
                 dis = euclidean(value, value1)
+                tup1 = value
+                tup2 = value1
+            #print(dis)
 
             if(dis < dismin):
                 dismin = dis
-                tup1 = value
-                tup2 = value1
+#                if(type(tup1) == type(list)):
+#                    tup1 = value[int(key)]
+#                elif (type(tup2) == type(list)):
+#                   tup2 = value1[int(k)]
+#                else:
+#                tup1 = value
+#                tup2 = value1
+                return_tup1 = tup1
+                return_tup2 = tup2
                 key1 = key
                 key2 = k
+#            elif(dis == dismin):
+#                if (int(key) < int(key1)):
+#                    key1 = key
+#                if int(k) < int(key2):
+#                    key2 = k
+#                dismin = dis
+#                tup1 = value
+#                tup2 = value1
 
-    return tup1, tup2, dismin, key1, key2
 
-def removekey(d, key):
-    r = dict(d)
-    #print(key)
-    del r[key]
-    return r
+    return return_tup1, return_tup2, dismin, key1, key2
+
 
 def random_x_y(m):
     list = []
@@ -223,18 +240,111 @@ def random_x_y(m):
 
     return list
 
+def imshow_hac(dataset):
+    m = len(dataset)  # length of the dataset
+    i = 0
+    dic = {}
+    for item in dataset:
+        dic[str(i)] = item
+        i += 1
+    # print(dic)
+
+    a = []
+
+    for i in dataset:
+        plt.scatter(i[0], i[1])
+
+    plt.ion()
+
+    for i in range(m - 1):
+        list = []
+        shortlist = []
+
+        # set_x = []
+        # set_y = []
+
+        point1, point2, dismin, key1, key2 = calculate_shortest_two_points(dic)
+        # set_x.append(point1[0])
+        # set_x.append(point2[0])
+        # set_y.append(point1[1])
+        # set_y.append(point2[1])
+
+        plt.plot([point1[0], point2[0]], [point1[1], point2[1]])
+        plt.pause(0.1)
+        # print(point1, point2)
+
+        print(point1, point2)
+
+        l = 0
+
+        if type(dic.get(key1)) == type(list):
+            # print(dic.get(key1))
+            for i in dic.get(key1):
+                # print(i)
+                shortlist.append(i)
+                l += 1
+            if type(dic.get(key2)) == type(list):
+                for i2 in dic.get(key2):
+                    shortlist.append(i2)
+                    l += 1
+            else:
+                shortlist.append(dic.get(key2))
+                l += 1
+
+        elif type(dic.get(key2)) == type(list):
+            for i in dic.get(key2):
+                shortlist.append(i)
+                l += 1
+            if type(dic.get(key1)) == type(list):
+                for i2 in dic.get(key1):
+                    # print(i)
+                    shortlist.append(i2)
+                    l += 1
+            else:
+                shortlist.append(dic.get(key1))
+                l += 1
+
+        else:
+            shortlist.append(dic.get(key1))
+            l += 1
+            shortlist.append(dic.get(key2))
+            l += 1
+        dic[str(m)] = shortlist
+        m = m + 1
+
+        try:
+            del dic[key1]
+            del dic[key2]
+        except KeyError:
+            print(1)
+            pass
+        ###print(dic)
+
+        key1 = int(key1)
+        key2 = int(key2)
+
+        if key1 < key2:
+            list.append(key1)
+            list.append(key2)
+        elif (key1 > key2):
+            list.append(key2)
+            list.append(key1)
+
+        plt.ioff()
+
+        list.append(dismin)
+        list.append(l)
+        a.append(list)
+
+        plt.pause(5)
 
 
-def shortestDist(points):
-    sh = float("inf")
-    for i in range(1, len(points)):
-        d = euclidean(points[i - 1], points[i])
-        if d < sh:
-            sh = d
-    return sh
 
-def calculate_dist(x1, x2, y1, y2):
-    return ((x1-x2)^2 + (y1-y2)^2)^0.5
+
+
+
+
+
 
 
 
@@ -257,19 +367,15 @@ def calculate_dist(x1, x2, y1, y2):
 if __name__=="__main__":
     a = load_data('Pokemon.csv')
     list = []
-    #print(a[0])
-    #print(calculate_x_y(a[0]))
-    #list.append(calculate_x_y(a[0]))
-    #list.append(calculate_x_y(a[1]))
-    #list.append(calculate_x_y(a[2]))
-    #list.append(calculate_x_y(a[3]))
-    #list.append(calculate_x_y(a[4]))
-    #list.append(calculate_x_y(a[5]))
+    #print(a)
 
     for i in range(20):
         list.append(calculate_x_y(a[i]))
 #    print(list)
-    hac(list)
+    print(hac(list))
+    #print(list)
+
+    imshow_hac(list)
     #print(list)
 
     #print(random_x_y(30))
@@ -285,3 +391,7 @@ if __name__=="__main__":
 #    fig = plt.figure(figsize=(25, 10))
 #    dn = dendrogram(Z)
 #    plt.show()
+
+
+    #print(a, b, c, d, e)
+    #print(dic)
